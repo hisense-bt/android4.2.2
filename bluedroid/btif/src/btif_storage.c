@@ -865,15 +865,21 @@ bt_status_t btif_storage_add_hid_device_info(bt_bdaddr_t *remote_bd_addr,
 {
     bdstr_t bdstr;
     bd2str(remote_bd_addr, &bdstr);
-    btif_config_set_int("Remote", bdstr, "HidAttrMask", attr_mask);
-    btif_config_set_int("Remote", bdstr, "HidSubClass", sub_class);
-    btif_config_set_int("Remote", bdstr, "HidAppId", app_id);
-    btif_config_set_int("Remote", bdstr, "HidVendorId", vendor_id);
-    btif_config_set_int("Remote", bdstr, "HidProductId", product_id);
-    btif_config_set_int("Remote", bdstr, "HidVersion", version);
-    btif_config_set_int("Remote", bdstr, "HidCountryCode", ctry_code);
-    if(dl_len > 0)
-        btif_config_set("Remote", bdstr, "HidDescriptor", (const char*)dsc_list, dl_len, BTIF_CFG_TYPE_BIN);
+    //hisense add if those information haven't been added, add them
+	int value;
+    if(!btif_config_get_int("Remote", bdstr, "HidAttrMask", &value)) {
+        btif_config_set_int("Remote", bdstr, "HidAttrMask", attr_mask);
+        btif_config_set_int("Remote", bdstr, "HidSubClass", sub_class);
+        btif_config_set_int("Remote", bdstr, "HidAppId", app_id);
+        btif_config_set_int("Remote", bdstr, "HidVendorId", vendor_id);
+        btif_config_set_int("Remote", bdstr, "HidProductId", product_id);
+        btif_config_set_int("Remote", bdstr, "HidVersion", version);
+        btif_config_set_int("Remote", bdstr, "HidCountryCode", ctry_code);
+        if(dl_len > 0)
+            btif_config_set("Remote", bdstr, "HidDescriptor", (const char*)dsc_list, dl_len, BTIF_CFG_TYPE_BIN);
+    //hisense fix the bug that device is paired but config file not saved in time
+        btif_config_save();
+    }
     return BT_STATUS_SUCCESS;
 }
 

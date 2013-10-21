@@ -155,6 +155,8 @@ extern void bta_hh_co_send_hid_info(btif_hh_device_t *p_dev, char *dev_name, UIN
 extern BOOLEAN check_cod(const bt_bdaddr_t *remote_bdaddr, uint32_t cod);
 extern void btif_dm_cb_remove_bond(bt_bdaddr_t *bd_addr);
 extern int  scru_ascii_2_hex(char *p_ascii, int len, UINT8 *p_hex);
+//hisense add for fix remote device closed pairing 
+extern void btif_dm_check_and_clear_bonding_state(BD_ADDR);
 
 /*****************************************************************************
 **  Local Function prototypes
@@ -789,6 +791,8 @@ static void btif_hh_upstreams_evt(UINT16 event, char* p_param)
                 bt_bdaddr_t *bdaddr = (bt_bdaddr_t*)p_data->conn.bda;
                 HAL_CBACK(bt_hh_callbacks, connection_state_cb, (bt_bdaddr_t*) &p_data->conn.bda,BTHH_CONN_STATE_DISCONNECTED);
                 btif_hh_cb.status = BTIF_HH_DEV_DISCONNECTED;
+				//hisense add for fix remote device closed pairing 
+                btif_dm_check_and_clear_bonding_state(p_data->conn.bda);
             }
             break;
         case BTA_HH_CLOSE_EVT:

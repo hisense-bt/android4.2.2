@@ -571,6 +571,16 @@ static int remove_node(const char* section, const char* key, const char* name)
     }
     return FALSE;
 }
+//hisense add for check config test beg
+static void sync_conf_file(const char* file_name)
+{
+	int fd = open(file_name, O_RDONLY);
+	if(fd > 0){
+		fsync(fd);
+	}
+	close(fd);
+}
+//hisense add for check config end
 static int save_cfg()
 {
     const char* file_name = CFG_PATH CFG_FILE_NAME CFG_FILE_EXT;
@@ -586,8 +596,11 @@ static int save_cfg()
         cached_change = 0;
         chown(file_name_new, -1, AID_NET_BT_STACK);
         chmod(file_name_new, 0660);
-        rename(file_name, file_name_old);
+//hisense add for check config test beg
+	sync_conf_file(file_name_new);
         rename(file_name_new, file_name);
+	sync_conf_file(file_name);
+//hisense add for check config test end
         ret = TRUE;
     }
     else BTIF_TRACE_ERROR0("btif_config_save_file failed");
